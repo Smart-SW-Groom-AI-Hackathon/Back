@@ -47,7 +47,6 @@ public class NaverSearchClient {
         }
 
         java.util.List<NaverSearchResponse.Item> allItems = new java.util.ArrayList<>();
-        java.util.Set<String> seenTitles = new java.util.HashSet<>();
 
         // 카테고리별로 검색해서 결과 합치기
         for (String cat : categoriesToSearch) {
@@ -60,10 +59,39 @@ public class NaverSearchClient {
 
             if (response != null && response.getItems() != null) {
                 for (NaverSearchResponse.Item item : response.getItems()) {
-                    String title = item.getTitle();
-                    if (!seenTitles.contains(title)) {
-                        seenTitles.add(title);
-                        allItems.add(item);
+                    allItems.add(item);
+                    if (allItems.size() >= display) break;
+                }
+            }
+        }
+
+        // 결과가 부족하면 추가 검색
+        if (allItems.size() < display) {
+            log.warn("Not enough results, searching with more offsets");
+
+            // category가 지정된 경우 해당 category로만, 아니면 모든 카테고리로 추가 검색
+            java.util.List<String> additionalCategories;
+            if (category != null && !category.isEmpty()) {
+                additionalCategories = java.util.List.of(category);
+            } else {
+                additionalCategories = new java.util.ArrayList<>(FOOD_CATEGORIES);
+                java.util.Collections.shuffle(additionalCategories);
+            }
+
+            for (String cat : additionalCategories) {
+                if (allItems.size() >= display) break;
+
+                String query = "진주시 " + district + " " + cat;
+
+                // 여러 start 값으로 재시도
+                for (int startOffset = 1; startOffset <= 10 && allItems.size() < display; startOffset++) {
+                    NaverSearchResponse response = searchLocal(query, 10, startOffset);
+
+                    if (response != null && response.getItems() != null) {
+                        for (NaverSearchResponse.Item item : response.getItems()) {
+                            allItems.add(item);
+                            if (allItems.size() >= display) break;
+                        }
                     }
                 }
             }

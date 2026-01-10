@@ -57,6 +57,13 @@ public class RestaurantService {
         } else {
             restaurants = restaurantRepository.findByDistrict(district);
         }
+
+        // DB에 데이터가 없으면 API에서 가져와서 저장
+        if (restaurants.isEmpty()) {
+            log.info("No restaurants in DB, fetching from API");
+            return searchAndSave(district, category, 10);
+        }
+
         return restaurants.stream()
                 .map(RestaurantDto::from)
                 .collect(Collectors.toList());
@@ -70,9 +77,17 @@ public class RestaurantService {
             restaurants = restaurantRepository.findRandomByDistrict(district.name());
         }
 
+        // DB에 데이터가 없으면 API에서 가져와서 저장 후 랜덤 반환
         if (restaurants.isEmpty()) {
+            log.info("No restaurants in DB for random selection, fetching from API");
+            List<RestaurantDto> newRestaurants = searchAndSave(district, category, 10);
+            if (!newRestaurants.isEmpty()) {
+                int randomIndex = random.nextInt(newRestaurants.size());
+                return newRestaurants.get(randomIndex);
+            }
             return null;
         }
+
         Restaurant randomRestaurant = restaurants.get(0); // findRandom... already shuffles
         return RestaurantDto.from(randomRestaurant);
     }
