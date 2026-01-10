@@ -26,3 +26,8 @@ naver:
     client-id: ${NAVER_CLIENT_ID:ubuPprER5qFNz8iiqQzJ}
     client-secret: ${NAVER_CLIENT_SECRET:Dx4jBQLcZW}
     base-url: https://openapi.naver.com
+
+
+claude-api:
+  api-key: 
+  base-url: https://api.anthropic.com/v1/messages
