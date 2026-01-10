@@ -35,19 +35,25 @@ public class NaverSearchClient {
                 .block();
     }
 
-    public NaverSearchResponse searchRestaurants(String district, int display) {
-        // 랜덤하게 카테고리 섞기
-        java.util.List<String> shuffled = new java.util.ArrayList<>(FOOD_CATEGORIES);
-        java.util.Collections.shuffle(shuffled);
+    public NaverSearchResponse searchRestaurants(String district, String category, int display) {
+        java.util.List<String> categoriesToSearch;
+
+        // category가 지정되면 해당 카테고리만, 아니면 모든 카테고리 검색
+        if (category != null && !category.isEmpty()) {
+            categoriesToSearch = java.util.List.of(category);
+        } else {
+            categoriesToSearch = new java.util.ArrayList<>(FOOD_CATEGORIES);
+            java.util.Collections.shuffle(categoriesToSearch);
+        }
 
         java.util.List<NaverSearchResponse.Item> allItems = new java.util.ArrayList<>();
         java.util.Set<String> seenTitles = new java.util.HashSet<>();
 
         // 카테고리별로 검색해서 결과 합치기
-        for (String category : shuffled) {
+        for (String cat : categoriesToSearch) {
             if (allItems.size() >= display) break;
 
-            String query = "진주시 " + district + " " + category;
+            String query = "진주시 " + district + " " + cat;
             int randomStart = random.nextInt(5) + 1;
 
             NaverSearchResponse response = searchLocal(query, 5, randomStart);
@@ -70,7 +76,8 @@ public class NaverSearchClient {
         result.setDisplay(allItems.size());
         result.setStart(1);
 
-        log.info("Combined search result: {} items for district {}", allItems.size(), district);
+        log.info("Combined search result: {} items for district {} with category {}",
+                allItems.size(), district, category != null ? category : "all");
         return result;
     }
 }

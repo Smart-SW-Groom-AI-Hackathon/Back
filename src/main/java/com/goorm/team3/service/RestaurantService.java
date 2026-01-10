@@ -27,12 +27,12 @@ public class RestaurantService {
     private final Random random = new Random();
 
     @Transactional
-    public List<RestaurantDto> searchAndSave(JinjuDistrict district, int count) {
+    public List<RestaurantDto> searchAndSave(JinjuDistrict district, String category, int count) {
         NaverSearchResponse response = naverSearchClient.searchRestaurants(
-                district.getKoreanName(), count);
+                district.getKoreanName(), category, count);
 
         if (response == null || response.getItems() == null) {
-            log.warn("No results from Naver API for district: {}", district);
+            log.warn("No results from Naver API for district: {} with category: {}", district, category);
             return Collections.emptyList();
         }
 
@@ -43,7 +43,7 @@ public class RestaurantService {
                 .collect(Collectors.toList());
 
         List<Restaurant> saved = restaurantRepository.saveAll(restaurants);
-        log.info("Saved {} new restaurants for district: {}", saved.size(), district);
+        log.info("Saved {} new restaurants for district: {} with category: {}", saved.size(), district, category);
 
         return saved.stream()
                 .map(RestaurantDto::from)

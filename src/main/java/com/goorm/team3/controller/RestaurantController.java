@@ -24,6 +24,7 @@ public class RestaurantController {
     @GetMapping("/restaurants/search")
     public ResponseEntity<List<RestaurantDto>> searchRestaurants(
             @RequestParam String district,
+            @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "10") int count) {
 
         JinjuDistrict jinjuDistrict = JinjuDistrict.fromKoreanName(district);
@@ -31,7 +32,7 @@ public class RestaurantController {
             return ResponseEntity.badRequest().build();
         }
 
-        List<RestaurantDto> restaurants = restaurantService.searchAndSave(jinjuDistrict, count);
+        List<RestaurantDto> restaurants = restaurantService.searchAndSave(jinjuDistrict, category, count);
         return ResponseEntity.ok(restaurants);
     }
 
