@@ -29,5 +29,5 @@ naver:
 
 
 claude-api:
-  api-key: 
+  api-key: ${ANTHROPIC_API_KEY}
   base-url: https://api.anthropic.com/v1/messages
