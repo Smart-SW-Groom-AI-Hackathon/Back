@@ -37,33 +37,46 @@ public class RestaurantController {
 
     @GetMapping("/restaurants")
     public ResponseEntity<List<RestaurantDto>> getRestaurantsByDistrict(
-            @RequestParam String district) {
+            @RequestParam String district,
+            @RequestParam(required = false) String category) {
 
         JinjuDistrict jinjuDistrict = JinjuDistrict.fromKoreanName(district);
         if (jinjuDistrict == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        List<RestaurantDto> restaurants = restaurantService.getRestaurantsByDistrict(jinjuDistrict);
+        List<RestaurantDto> restaurants = restaurantService.getRestaurantsByDistrict(jinjuDistrict, category);
         return ResponseEntity.ok(restaurants);
     }
 
     @GetMapping("/restaurants/random")
     public ResponseEntity<RestaurantDto> getRandomRestaurant(
-            @RequestParam String district) {
+            @RequestParam String district,
+            @RequestParam(required = false) String category) {
 
         JinjuDistrict jinjuDistrict = JinjuDistrict.fromKoreanName(district);
         if (jinjuDistrict == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        RestaurantDto restaurant = restaurantService.getRandomRestaurant(jinjuDistrict);
+        RestaurantDto restaurant = restaurantService.getRandomRestaurant(jinjuDistrict, category);
         if (restaurant == null) {
             return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok(restaurant);
     }
+
+    @GetMapping("/restaurants/categories")
+    public ResponseEntity<List<String>> getCategoriesByDistrict(@RequestParam String district) {
+        JinjuDistrict jinjuDistrict = JinjuDistrict.fromKoreanName(district);
+        if (jinjuDistrict == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        List<String> categories = restaurantService.getCategoriesByDistrict(jinjuDistrict);
+        return ResponseEntity.ok(categories);
+    }
+
 
     @GetMapping("/restaurants/{id}")
     public ResponseEntity<RestaurantDto> getRestaurantById(@PathVariable Long id) {

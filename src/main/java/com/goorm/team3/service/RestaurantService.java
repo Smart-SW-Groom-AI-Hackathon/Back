@@ -50,19 +50,35 @@ public class RestaurantService {
                 .collect(Collectors.toList());
     }
 
-    public List<RestaurantDto> getRestaurantsByDistrict(JinjuDistrict district) {
-        return restaurantRepository.findByDistrict(district).stream()
+    public List<RestaurantDto> getRestaurantsByDistrict(JinjuDistrict district, String category) {
+        List<Restaurant> restaurants;
+        if (category != null && !category.isEmpty()) {
+            restaurants = restaurantRepository.findByDistrictAndCategory(district.name(), category);
+        } else {
+            restaurants = restaurantRepository.findByDistrict(district);
+        }
+        return restaurants.stream()
                 .map(RestaurantDto::from)
                 .collect(Collectors.toList());
     }
 
-    public RestaurantDto getRandomRestaurant(JinjuDistrict district) {
-        List<Restaurant> restaurants = restaurantRepository.findByDistrict(district);
+    public RestaurantDto getRandomRestaurant(JinjuDistrict district, String category) {
+        List<Restaurant> restaurants;
+        if (category != null && !category.isEmpty()) {
+            restaurants = restaurantRepository.findRandomByDistrictAndCategory(district.name(), category);
+        } else {
+            restaurants = restaurantRepository.findRandomByDistrict(district.name());
+        }
+
         if (restaurants.isEmpty()) {
             return null;
         }
-        Restaurant randomRestaurant = restaurants.get(random.nextInt(restaurants.size()));
+        Restaurant randomRestaurant = restaurants.get(0); // findRandom... already shuffles
         return RestaurantDto.from(randomRestaurant);
+    }
+    
+    public List<String> getCategoriesByDistrict(JinjuDistrict district) {
+        return restaurantRepository.findCategoriesByDistrict(district);
     }
 
     public RestaurantDto getRestaurantById(Long id) {
