@@ -44,11 +44,11 @@ public class HamoService {
         ---------------------------------
         상태 구간:
 
-        OtterIndex < 6.5 → "마른 상태"
-        6.5 ≤ OtterIndex < 9 → "건강한 상태"
-        9 ≤ OtterIndex < 11.5 → "통통한 상태"
+        OtterIndex < 6.5 → "죽은 상태"
+        6.5 ≤ OtterIndex < 9 → "마른 상태"
+        9 ≤ OtterIndex < 11.5 → "건강한 상태"
         11.5 ≤ OtterIndex < 14 → "뚱뚱한 상태"
-        14 ≤ OtterIndex → "몸짱 상태"
+        14 ≤ OtterIndex → "몸짱인 상태"
 
         몸무게 ≤ 0 → 죽은 상태
 
